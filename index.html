@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Heater Calculator</title>
+    <!-- Required meta tags -->
+    <meta charset="UTF-8">
+    <meta name="description" content="This website will estimate the heater wattage you need to heat your item based on caculations for heat loss from conduction, convention and radiation.">
+    <meta name="keywords" content="heater,estimator,wattage,radiation,conduction,convection,heat flux">
+    <meta name="author" content="James Bailey">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- site favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="mask-icon" href="safari-pinned-tab.svg" color="#5bbad5">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap-grid.min.css"> <!-- minifiy version are faster for browser -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="fixed-top">
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark ">
+                <a class="navbar-brand" href="index.html">Heater Calculator</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="../../pages/heat-transfer">Heat transfer</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../../pages/process-load">Process Load</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../../pages/heat-up">Heat Up</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                More About us
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <a class="dropdown-item" href="https://jamessbailey.com" target="_blank">James S Bailey</a>
+                                <a class="dropdown-item" href="https://embroiderywaresoftware.com" target="_blank">EmbroideryWare</a>
+                                <a class="dropdown-item" href="https://www.facebook.com/EmbroideryWare/" target="_blank">EmbroideryWare Facebook Page</a>
+                                <a class="dropdown-item" href="https://www.facebook.com/groups/EmbroideryWare/" target="_blank">EmbroideryWare Facebook Group</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+        <div class="button-row-heat-transfer-buttons">
+                <h5 class="button-row-heat-transfer-header">Add a heat transfer element</h5>   
+                <button type="button" class="btn btn-primary addItemButton" onclick="AddHeatTransferElementByType('conduction')">Conduction</button>
+                <button type="button" class="btn btn-primary addItemButton" onclick="AddHeatTransferElementByType('convection')">Convection</button>
+                <button type="button" class="btn btn-primary addItemButton" onclick="AddHeatTransferElementByType('radiation')">Radiation</button>
+                <button type="button" class="btn btn-primary addItemButton" onclick="AddHeatTransferElementByType('heatup')">Heat Up</button>
+                <button type="button" class="btn btn-primary addItemButton" onclick="AddHeatTransferElementByType('processload')">Process Load</button>
+                <hr>
+                <h5>Your heat transfer elements below</h5>
+                <hr>
+        </div>
+        <div class="myTestCases">
+            <div id="heat-transfer-elements"></div>
+        </div>
+
+        <footer class="footer fixed-bottom">
+            <h5>Your total heat transfer</h5>
+            <div class="myTestResult">
+                <div id="total-watts-lost"></div>
+            </div>
+        </footer>
+
+        <!--        //<div class="LI-profile-badge" data-version="v1" data-size="medium" data-locale="en_US" data-type="horizontal" data-theme="dark" data-vanity="james-bailey-jimmysoftllc"><a class="LI-simple-link" href='https://www.linkedin.com/in/james-bailey-jimmysoftllc?trk=profile-badge'>James Bailey</a></div>-->
+    </div>
+
+    <!-- Modal -->
+
+    <div class="modal fade" id="conductionModal" data-hc-index="" abindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-large" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modal-title">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="my-parameters">
+                        Title <input class="hc-conduction-title" type="text" id="hc-conduction-title"></input>
+                    </div>
+                    <div id="my-parameters">
+                        Description <textarea class="hc-conduction-description md-textarea form-control" type="textarea" id="hc-conduction-description"></textarea>
+                    </div>
+                    <div id="my-parameters">
+                        Cross Section Area <input class="hc-conduction-area" type="text" id="hc-conduction-area" size="7"></input> (ft<sup>2</sup>)
+                    </div>
+                    <div id="my-parameters">
+                        Length of conductive path <input class="hc-conduction-length" type="text" id="hc-conduction-length" size="7"></input> (in)
+                    </div>
+                    <div id="my-parameters">
+                        Source Temperature <input class="hc-conduction-source" type="text" id="hc-conduction-source" size="7"></input> (°F)
+                    </div>
+                    <div id="my-parameters">
+                        Sink Temperature <input class="hc-conduction-sink" type="text" id="hc-conduction-sink" size="7"></input> (°F)
+                    </div>
+                    <div id="my-parameters">
+                        Themal Conductivity <input class="hc-conduction-thermalConductivity" type="text" id="hc-conduction-thermalConductivity" size="7"></input> (BTU-in/ft<sup>2</sup>/°F/hr)
+                    </div>
+                    <p></p>
+                    <div class="my-conduction-data-div"></div>
+                    <div class="hc-conduction-material"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="CloseConductionModal()">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="radiationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-large" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modal-title">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="my-parameters">
+                        Title <input class="hc-radiation-title" type="text" id="hc-radiation-title"></input>
+                    </div>
+                    <div id="my-parameters">
+                        Description <textarea class="hc-radiation-description md-textarea form-control" type="textarea" id="hc-radiation-description"></textarea>
+                    </div>
+                    <div id="my-parameters">
+                        Cross Section Area <input class="hc-radiation-area" type="text" id="hc-radiation-area" size="7"></input> (ft<sup>2</sup>)
+                    </div>
+                    <div id="my-parameters">
+                        Source Temperature <input class="hc-radiation-source" type="text" id="hc-radiation-source" size="7"></input> (°F)
+                    </div>
+                    <div id="my-parameters">
+                        Sink Temperature <input class="hc-radiation-sink" type="text" id="hc-radiation-sink" size="7"></input> (°F)
+                    </div>
+                    <div id="my-parameters">
+                        Emissivity <input class="hc-radiation-emissivity" type="text" id="hc-radiation-emissivity" size="7"></input>
+                    </div>
+                    <p></p>
+                    <div class="my-radiation-data-div"></div>
+                    <div class="hc-radiation-material"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="CloseRadiationModal()">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="convectionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-large" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modal-title">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="my-parameters">
+                        Title <input class="hc-convection-title" type="text" id="hc-convection-title"></input>
+                    </div>
+                    <div id="my-parameters">
+                        Description <textarea class="hc-convection-description md-textarea form-control" type="textarea" id="hc-convection-description"></textarea>
+                    </div>
+                    <div id="my-parameters">
+                        Cross Section Area <input class="hc-convection-area" type="text" id="hc-convection-area" size="7"></input> (ft<sup>2</sup>)
+                    </div>
+                    <div id="my-parameters">
+                        Length of side parallel to air flow <input class="hc-convection-length" type="text" id="hc-convection-length" size="7"></input> (ft)
+                    </div>
+                    <div id="my-parameters">
+                        Source Temperature <input class="hc-convection-source" type="text" id="hc-convection-source" size="7"></input> (°F)
+                    </div>
+                    <div id="my-parameters">
+                        Sink Temperature <input class="hc-convection-sink" type="text" id="hc-convection-sink" size="7"></input> (°F)
+                    </div>
+                    <div id="my-parameters">
+                        Average Air Velocity <input class="hc-convection-averageAirVelocity" type="text" id="hc-convection-averageAirVelocity" size="7"></input> (ft/sec)
+                    </div>
+                    <p></p>
+                    <div class="my-convection-data-div"></div>
+                    <div class="hc-convection-material"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="CloseConvectionModal()">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="heatupModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-large" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modal-title">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="my-parameters">
+                        Title <input class="hc-heatup-title" type="text" id="hc-heatup-title"></input>
+                    </div>
+                    <div id="my-parameters">
+                        Description <textarea class="hc-heatup-description md-textarea form-control" type="textarea" id="hc-heatup-description"></textarea>
+                    </div>
+                    <div id="my-parameters">
+                        Mass <input class="hc-heatup-mass" type="text" id="hc-heatup-mass" size="7"></input> (lb)
+                    </div>
+                    <div id="my-parameters">
+                        Heat Up Time <input class="hc-heatup-cycleTime" type="text" id="hc-heatup-cycleTime" size="5" size="7"></input> (hr)
+                    </div>
+                    <div id="my-parameters">
+                        Source Temperature <input class="hc-heatup-source" type="text" id="hc-heatup-source" size="7"></input> (°F)
+                    </div>
+                    <div id="my-parameters">
+                        Sink Temperature <input class="hc-heatup-sink" type="text" id="hc-heatup-sink" size="7"></input> (°F)
+                    </div>
+                    <div id="my-parameters">
+                        Specific Heat <input class="hc-heatup-specificHeat" type="text" id="hc-heatup-specificHeat" size="7"></input> (BTU/lb/°F)
+                    </div>
+                    <div id="my-parameters">
+                        Latent Heat <input class="hc-heatup-latentHeatOfFusion" type="text" id="hc-heatup-latentHeatOfFusion" size="7"></input> (BTU/lb)
+                    </div>
+
+                    <p></p>
+                    <div class="my-heatup-data-div"></div>
+                    <div class="hc-heatup-material"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="CloseHeatupModal()">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="processloadModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-large" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modal-title">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="my-parameters">
+                        Title <input class="hc-processload-title" type="text" id="hc-processload-title"></input>
+                    </div>
+                    <div id="my-parameters">
+                        Description <textarea class="hc-processload-description md-textarea form-control" type="textarea" id="hc-processload-description"></textarea>
+                    </div>
+                    <div id="my-parameters">
+                        Mass <input class="hc-processload-mass" type="text" id="hc-processload-mass" size="7"></input> (lb)
+                    </div>
+                    <div id="my-parameters">
+                        Cycle Time <input class="hc-processload-cycleTime" type="text" id="hc-processload-cycleTime" size="7"></input> (hr)
+                    </div>
+                    <div id="my-parameters">
+                        Source Temperature <input class="hc-processload-source" type="text" id="hc-processload-source" size="7"></input> (°F)
+                    </div>
+                    <div id="my-parameters">
+                        Sink Temperature <input class="hc-processload-sink" type="text" id="hc-processload-sink" size="7"></input> (°F)
+                    </div>
+                    <div id="my-parameters">
+                        Specific Heat <input class="hc-processload-specificHeat" type="text" id="hc-processload-specificHeat" size="7"></input> (BTU/lb/°F)
+                    </div>
+                    <div id="my-parameters">
+                        Latent Heat <input class="hc-processload-latentHeatOfFusion" type="text" id="hc-processload-latentHeatOfFusion" size="7"></input> (BTU/lb)
+                    </div>
+                    <p></p>
+                    <div class="my-processload-data-div"></div>
+                    <div class="hc-processload-material"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="CloseProcessloadModal()">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery first, then Popper.js, then Bootstrap JS, then my files -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://platform.linkedin.com/badges/js/profile.js" async defer></script>
+    <script src="js/user-data.js"></script>
+    <script src="js/db.js"></script>
+    <script src="js/dom-items.js"></script>
+    <script src="js/dom-conduction.js"></script>
+    <script src="js/dom-convection.js"></script>
+    <script src="js/dom-heatup.js"></script>
+    <script src="js/dom-processload.js"></script>
+    <script src="js/dom-radiation.js"></script>
+</body></html>
