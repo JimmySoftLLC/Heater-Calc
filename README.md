@@ -1,13 +1,13 @@
 # Heater-Calc
 Web app that calculates heater transfer for conduction, convection, radiation, process load and heatup.
 
-Heater Calc only uses html, css, js and bootstrap components. The bootstrap components that are used are cards, modals, navbar and footers. Because of this it is light weight and very fast.
+Heater Calc only uses html, css, js, jquery, popper.js and bootstrap components. The bootstrap components that are used are cards, modals, navbar and footers. Because of this it is light weight and very fast.
 
 It uses IndexedDB as a client database therefore there is no need for mongoDB to be running on the server.
 
 This is a great example for those who do not want the maintenance of backend components like mongodb but need data persistence on the client side.
 
->**Note**: Client side browser databases are great for an application like this.  This a simple calculator app with persitant data at no cost.  This is a great use case where you don't want the expense of a server side data base or the maintenance nightmares.
+>**Note**: Client side browser databases are great for an application like this.  This a simple calculator app with persitant data at no cost.  This is a great use case where you want a static website without the expense of a server side data base.
 
 ![heater calc image](https://www.jimmysoftllc.com/img/portfolio/02-full.jpg "Heater calc screenshot")
 
@@ -19,7 +19,7 @@ First you open the data base using, let dbReq = indexedDB.open(name, version).  
 
 Once the database is opened and onupgradeneeded completes it fires dbReq.onsuccess which in turn runs getAndDisplayHeatTransferElements(db).
 
->**Note**: The operations performed using IndexedDB are done asynchronously so getAndDisplayHeatTransferElements(db) has to be inside the callback of dbReq.onsuccess.
+>**Note**: The operations performed using IndexedDB are done asynchronously so getAndDisplayHeatTransferElements(db) has to be inside the callback dbReq.onsuccess.
 
 ```
 //
@@ -121,8 +121,61 @@ function getAndDisplayHeatTransferElements(db) { // getAndDisplayHeatTransferEle
 }
 
 ```
+## IndexedDB Misc
 
+By now you should understand how the data base is called and how it returns callbacks.  For the rest I will just describe what they do.
 
+### DeleteHeatTransferElement
 
+This call will delete an element using its timestamp `myIndex`.
+
+```
+function DeleteHeatTransferElement(myIndex) {
+    let transaction = db.transaction(['heatTransferElements'], 'readwrite');
+    let objectStore = transaction.objectStore('heatTransferElements');
+    var result = objectStore.delete(myIndex);
+    result.onsuccess = function (myIndex) {
+        console.log('Successfully deleted element')
+        getAndDisplayHeatTransferElements(db);
+    }
+
+    result.onerror = function (event) {
+        console.log('error in cursor request ' + event.target.errorCode);
+    }
+}
+```
+### UpdateHeatTransferElement
+
+This call will update an element using its timestamp `myIndex` and data `newValue`.
+
+```
+function UpdateHeatTransferElement(key, newValue) {
+    let transaction = db.transaction(['heatTransferElements'], 'readwrite');
+    let objectStore = transaction.objectStore('heatTransferElements');   
+    var result = objectStore.put(newValue, key);
+    result.onsuccess = function (event) {
+        console.log('Successfully edited key')
+        getAndDisplayHeatTransferElements(db);
+    };
+
+    result.onerror = function (event) {
+        console.log('error in cursor request ' + event.target.errorCode);
+    };
+};
+```
+
+## DOM maninpulations
+
+The DOM is updated using two div elements.  `<div id="heat-transfer-elements"></div>` updates the bootstrap cards and `<div id="total-watts-lost"></div>` updates the footer with the results.
+
+```
+<div class="myTestCases">
+    <div id="heat-transfer-elements"></div>
+</div>
+
+<div class="myTestResult">
+    <div id="total-watts-lost"></div>
+</div>
+```
 
 
