@@ -15,11 +15,11 @@ This is a great example for those who do not want the maintenance of backend com
 
 To set up the database on the client side I use the following code.
 
-First you open the data base using `let dbReq = indexedDB.open(name, version);`.  If a database already exists and is the same version it skips `dbReq.onupgradeneeded`.  If the database doesn't exist or the version has changed it will process the code in `dbReq.onupgradeneeded`.
+First you open the data base using, let dbReq = indexedDB.open(name, version).  If a database already exists and is the same version it skips dbReq.onupgradeneeded.  If the database doesn't exist or the version has changed it will process the code in dbReq.onupgradeneeded.
 
-Once the database is opened and onupgradeneeded completes it fires `dbReq.onsuccess` which in turn runs `getAndDisplayHeatTransferElements(db);`.
+Once the database is opened and onupgradeneeded completes it fires dbReq.onsuccess which in turn runs getAndDisplayHeatTransferElements(db).
 
->**Note**: The operations performed using IndexedDB are done asynchronously so `getAndDisplayHeatTransferElements(db);` has to be inside the callback of  `dbReq.onsuccess`.
+>**Note**: The operations performed using IndexedDB are done asynchronously so getAndDisplayHeatTransferElements(db) has to be inside the callback of dbReq.onsuccess.
 
 ```
 //
@@ -51,9 +51,10 @@ dbReq.onerror = function (event) { // Fires when we can't open the database
 ```
 ## IndexedDB addHeatTransferElement
 
-The `function addHeatTransferElement` will call IndexedDB asynchronously and will fire 'transaction.oncomplete' which in turn runs `getAndDisplayHeatTransferElements(db);`.
+The function addHeatTransferElement will call IndexedDB asynchronously and will fire transaction.oncomplete which in turn runs getAndDisplayHeatTransferElements(db).
 
 In our implementation we use timestamps as keys.  We used these keys later to identify individual bootstrap cards where we set the button data attributes to 
+
 ```
 data-hc-index="` + myheatTransferElements.timestamp + `"
 ```
@@ -85,9 +86,9 @@ function addHeatTransferElement(db, hcTitle, hcDate, hcType, hcData, hcResult, h
 ```
 ## IndexedDB getAndDisplayHeatTransferElements
 
-The function `getAndDisplayHeatTransferElements` will set up a transaction `let transaction = db.transaction(['heatTransferElements'], 'readonly');` and using this transaction will define an object store from the database `let objectStore = transaction.objectStore('heatTransferElements');`.  
+The function getAndDisplayHeatTransferElements will set up a transaction, let transaction = db.transaction(['heatTransferElements'], 'readonly') and using this transaction will define an object store from the database let objectStore = transaction.objectStore('heatTransferElements').  
 
-Then using the objectStore a request is made to the database using `let req = objectStore.openCursor();`.  This results in a callback `req.onsuccess` in which we get cursor.  The cursor is then used to iterate through the target pushing the result in to `heatTransferElements` until there are no more cursors.  At that point `DisplayElements(heatTransferElements);` is called to display the bootstrap cards.
+Then using the objectStore a request is made to the database using, let req = objectStore.openCursor().  This results in a callback req.onsuccess in which we get cursor.  The cursor is then used to iterate through the target pushing the result in to heatTransferElements until there are no more cursors.  At that point DisplayElements(heatTransferElements) is called to display the bootstrap cards.
 
 ```
 function getAndDisplayHeatTransferElements(db) { // getAndDisplayHeatTransferElements retrieves all heatTransferElements in the notes object store using an IndexedDB cursor and sends them to DisplayElements so they can be displayed
