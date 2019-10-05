@@ -11,7 +11,7 @@ This is a great example for those who do not want the maintenance of backend com
 
 ![heater calc image](https://www.jimmysoftllc.com/img/portfolio/02-full.jpg "Heater calc screenshot")
 
-## IndexDB setup
+## IndexedDB setup
 
 To set up the database on the client side I use the following code.
 
@@ -49,7 +49,7 @@ dbReq.onerror = function (event) { // Fires when we can't open the database
     console.log('error opening database ' + event.target.errorCode);
 }
 ```
-## IndexDB addHeatTransferElement
+## IndexedDB addHeatTransferElement
 
 The `function addHeatTransferElement` will call IndexedDB asynchronously and will fire 'transaction.oncomplete' which in turn runs `getAndDisplayHeatTransferElements(db);`.
 
@@ -83,6 +83,45 @@ function addHeatTransferElement(db, hcTitle, hcDate, hcType, hcData, hcResult, h
     }
 }
 ```
+## IndexedDB getAndDisplayHeatTransferElements
+
+The function `getAndDisplayHeatTransferElements` will set up a transaction `let transaction = db.transaction(['heatTransferElements'], 'readonly');` and using this transaction will define an object store from the database `let objectStore = transaction.objectStore('heatTransferElements');`.  
+
+Then using the objectStore a request is made to the database using `let req = objectStore.openCursor();`.  This results in a callback `req.onsuccess` in which we get cursor.  The cursor is then used to iterate through the target pushing the result in to `heatTransferElements` until there are no more cursors.  At that point `DisplayElements(heatTransferElements);` is called to display the bootstrap cards.
+
+```
+function getAndDisplayHeatTransferElements(db) { // getAndDisplayHeatTransferElements retrieves all heatTransferElements in the notes object store using an IndexedDB cursor and sends them to DisplayElements so they can be displayed
+    let transaction = db.transaction(['heatTransferElements'], 'readonly');
+    let objectStore = transaction.objectStore('heatTransferElements');   
+    let req = objectStore.openCursor(); // Create our openCursor request to get all items in the store, which we collect in the allHeaterTransferElements array.
+    
+    heatTransferElements.length = 0;
+
+    req.onsuccess = function (event) {    
+        let cursor = event.target.result; // The result of req.onsuccess is an IDBCursor
+        if (cursor != null) { // If the cursor isn't null, we got an IndexedDB item. Add it to the heatTransferElements array and have the cursor continue
+            heatTransferElements.push(new heatTransferElement(cursor.value.title,                                            
+                                                            cursor.value.date, 
+                                                            cursor.value.type, 
+                                                            cursor.value.data, 
+                                                            cursor.value.result, 
+                                                            cursor.value.customer, 
+                                                            cursor.value.description, 
+                                                            cursor.value.timestamp))
+            cursor.continue();
+        } else { //If we have a null cursor, it means we've gotten all the items in the store, so display the heatTransferElements we got
+            DisplayElements(heatTransferElements);
+        }
+    }
+
+    req.onerror = function (event) {
+        console.log('error in cursor request ' + event.target.errorCode);
+    }
+}
+
+```
+
+
 
 
 
